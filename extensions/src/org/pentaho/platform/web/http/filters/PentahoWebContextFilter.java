@@ -50,9 +50,9 @@ import java.util.Map;
 
 /**
  * If the request is searching for a webcontext.js, it writes out the content of the webcontext.js
- * 
+ *
  * @author Ramaiz Mansoor
- * 
+ *
  */
 public class PentahoWebContextFilter implements Filter {
 
@@ -71,8 +71,7 @@ public class PentahoWebContextFilter implements Filter {
   private static final String CSS = ".css"; //$NON-NLS-1$
   private static final String CONTEXT = "context"; //$NON-NLS-1$
   private static final String GLOBAL = "global"; //$NON-NLS-1$
-  private static final byte[] REQUIRE_JS_CFG_START =
-      "var requireCfg = {waitSeconds: 30, paths: {}, shim: {}, map: {\"*\": {}}, bundles: {}, config: {\"pentaho/service\": {}}, packages: []};\n".getBytes(); //$NON-NLS-1$
+  private static final String WAIT_SECONDS = "waitSeconds"; //$NON-NLS-1$
   private static final String REQUIRE_JS = "requirejs"; //$NON-NLS-1$
   // Changed to not do so much work for every request
   private static final ThreadLocal<byte[]> THREAD_LOCAL_CONTEXT_PATH = new ThreadLocal<byte[]>();
@@ -146,7 +145,7 @@ public class PentahoWebContextFilter implements Filter {
         printActiveTheme( httpRequest, out );
 
         // setup the RequireJS config object for plugins to extend
-        out.write( REQUIRE_JS_CFG_START );
+        printRequireJsCfgStart(out);
 
         // Let all plugins contribute to the RequireJS config
         printResourcesForContext( REQUIRE_JS, out, httpRequest, false );
@@ -367,6 +366,20 @@ public class PentahoWebContextFilter implements Filter {
       }
     }
 
+  }
+
+  public void printRequireJsCfgStart( OutputStream out ) throws IOException {
+
+    int waitTime;
+
+    try {
+      waitTime = Integer.parseInt( PentahoSystem.getSystemSetting( WAIT_SECONDS, "30" ) );
+    } catch ( NumberFormatException e ) {
+      waitTime = 30;
+    }
+    String requireJsCfgStart = "var requireCfg = {waitSeconds: " + waitTime
+      + ", paths: {}, shim: {}, map: {\"*\": {}}, bundles: {}, config: {\"pentaho/service\": {}}, packages: []};\n";
+    out.write( requireJsCfgStart.getBytes() );
   }
 
   protected void addCustomInfo( OutputStream out ) throws IOException {
