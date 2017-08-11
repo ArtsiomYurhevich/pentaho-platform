@@ -35,6 +35,8 @@ import javax.xml.transform.sax.SAXSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.xml.XMLParserFactoryProducer;
+import org.pentaho.platform.api.engine.IPluginManager;
+import org.pentaho.platform.api.engine.PluginBeanException;
 import org.pentaho.platform.api.mimetype.IMimeType;
 import org.pentaho.platform.api.repository2.unified.Converter;
 import org.pentaho.platform.core.mimetype.MimeType;
@@ -112,6 +114,13 @@ public class MimeTypeListFactory {
           String converterBeanName = mimeTypeDef.getConverter() != null && !mimeTypeDef.getConverter().isEmpty()
               ? mimeTypeDef.getConverter() : "streamConverter";
           converter = PentahoSystem.get( Converter.class, /*session*/ null, Collections.singletonMap( "name", converterBeanName ) );
+          if ( converter == null ) {
+            try {
+              converter = (Converter) PentahoSystem.get( IPluginManager.class ).getBean( converterBeanName );
+            } catch ( PluginBeanException e ) {
+              converter = null;
+            }
+          }
           if ( converter == null ) {
             log.error( "Could not find converter class \"" + converterBeanName + "\" for mimeType \""
                 + mimeTypeDef.getMimeType() + "\" in import handler " + handlerClass );
