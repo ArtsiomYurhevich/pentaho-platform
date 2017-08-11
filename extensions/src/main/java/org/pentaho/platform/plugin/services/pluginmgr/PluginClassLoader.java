@@ -110,6 +110,7 @@ public class PluginClassLoader extends URLClassLoader {
               .getAbsolutePath(), libDir.getAbsolutePath() ), e );
     }
     addJars( urls, libDir );
+    addJars( urls, pluginDir );
     return urls.toArray( new URL[urls.size()] );
   }
 

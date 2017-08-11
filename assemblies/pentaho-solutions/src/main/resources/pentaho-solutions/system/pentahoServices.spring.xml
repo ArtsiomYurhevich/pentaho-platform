@@ -22,7 +22,7 @@
 
   <wss:binding url="/webservices/repositorySync">
     <wss:service>
-      <ws:service impl="com.pentaho.pdi.ws.RepositorySyncWebService" />
+      <ws:service impl="com.pentaho.pdi.com.pentaho.pdi.ws.RepositorySyncWebService" />
     </wss:service>
   </wss:binding>
 
