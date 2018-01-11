@@ -13,7 +13,7 @@
  * See the GNU General Public License for more details.
  *
  *
- * Copyright 2006 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2006 - 2018 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.engine.security;
@@ -66,6 +66,8 @@ public class SecurityHelper implements ISecurityHelper {
    */
   private static ISecurityHelper instance = new SecurityHelper();
   private static ISecurityHelper mockInstance;
+
+  public static final String ADMIN_PERM = "org.pentaho.security.administerSecurity";
 
   private ITenantedPrincipleNameResolver tenantedUserNameUtils;
   private IAuthorizationPolicy policy;

@@ -13,7 +13,7 @@
  * See the GNU General Public License for more details.
  *
  *
- * Copyright 2006 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2006 - 2018 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.engine.services;
@@ -23,10 +23,12 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.platform.api.engine.ActionSequenceException;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IMessageFormatter;
 import org.pentaho.platform.api.engine.IRuntimeContext;
 import org.pentaho.platform.api.util.IVersionHelper;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.security.SecurityHelper;
 import org.pentaho.platform.engine.services.actionsequence.ActionSequenceResource;
 import org.pentaho.platform.engine.services.messages.Messages;
 import org.pentaho.platform.engine.services.runtime.ParameterManager.ReturnParameter;
@@ -156,8 +158,15 @@ public class MessageFormatter implements IMessageFormatter {
             break;
           }
         }
-        if ( theFailureException != null ) {
-          formatExceptionMessage( mimeType, theFailureException, messageBuffer );
+
+        if ( theFailureException != null  ) {
+          boolean isAdmin = PentahoSystem.get( IAuthorizationPolicy.class ).isAllowed( SecurityHelper.ADMIN_PERM );
+          if ( isAdmin ) {
+            formatExceptionMessage( mimeType, theFailureException, messageBuffer );
+          } else {
+            theMessages.removeIf( msg ->  msg instanceof ActionSequenceException );
+            formatErrorMessage( mimeType, "Failed", theMessages, messageBuffer );
+          }
         } else {
           formatErrorMessage( mimeType, "Failed", theMessages, messageBuffer ); //$NON-NLS-1$
         }
