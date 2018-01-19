@@ -30,6 +30,7 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.web.servlet.messages.Messages;
 import org.safehaus.uuid.UUID;
+import org.owasp.encoder.Encode;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -123,7 +124,7 @@ public class PluggableUploadFileServlet extends HttpServlet implements Servlet {
     if ( !pluginManager.isBeanRegistered( uploaderBeanId ) ) {
       response.getWriter().write(
           Messages.getInstance().getErrorString(
-            "PluggableUploadFileServlet.ERROR_0008_NO_UPLOADER_BY_ID", uploaderBeanId ) ); //$NON-NLS-1$
+            "PluggableUploadFileServlet.ERROR_0008_NO_UPLOADER_BY_ID", Encode.forHtml( uploaderBeanId ) ) ); //$NON-NLS-1$
       return null;
     }
 
